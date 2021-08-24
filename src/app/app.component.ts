@@ -10,7 +10,7 @@ import { HttpClient } from "@angular/common/http";
         width: 20vw;
         margin: 10px 10px 20px 10px;
       }
-      label {
+      span, label {
         margin-left: 10px;
       }
       video {
@@ -40,18 +40,13 @@ export class AppComponent {
             if (uri in data.result) {
               const result = data.result[uri];
               if ("error" in result) {
-                console.error(
-                  "Error when resolving URI!",
-                  result.error.text
-                );
-              }
-              else if (result?.value?.stream_type != "video") {
+                console.error("Error when resolving URI!", result.error.text);
+              } else if (result?.value?.stream_type != "video") {
                 console.error(
                   "URI don't resolve to a video!",
                   result?.value?.stream_type
                 );
-              }
-              else {
+              } else {
                 const confirmedUri: string = result.short_url.substring(
                   result.short_url.indexOf("lbry://")
                 );
