@@ -1,31 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
-  styles: [
-    `
-      input {
-        width: 20vw;
-        margin: 10px 10px 20px 10px;
-      }
-      span, label {
-        margin-left: 10px;
-      }
-      video {
-        width: 640px;
-        height: 360px;
-      }
-    `,
-  ],
+  styleUrls: ["./app.component.css"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   baseURL: string = "https://api.lbry.tv/api/v1/proxy";
   streamUrl: string;
+  thumbnails: string[];
+  streamUrlList: string[];
 
   constructor(private http: HttpClient) {
     this.streamUrl = "";
+    this.thumbnails = [];
+    this.streamUrlList = [];
+  }
+  ngOnInit(): void {
+    this.getAndShowMostRecentVideos();
   }
 
   resolveUriAndSetStreamSrc(uri: string) {
@@ -70,5 +63,44 @@ export class AppComponent {
           },
         });
     }
+  }
+
+  getAndShowMostRecentVideos() {
+    this.http
+      .post<any>(this.baseURL, {
+        method: "claim_search",
+        params: { stream_types: ["video"], any_tags: "tech" },
+      })
+      .subscribe((data) => {
+        if (data?.result?.items) {
+          const vidList: any[] = data?.result?.items;
+          if (vidList.length > 0) {
+            const maxLen = vidList.length > 5 ? 5 : vidList.length;
+            for (let i = 0; i < maxLen; i++) {
+              this.thumbnails.push(vidList[i]?.value?.thumbnail?.url);
+              const uri: string = vidList[i].short_url.substring(
+                vidList[i].short_url.indexOf("lbry://")
+              );
+              this.http
+                .post<any>(this.baseURL, {
+                  method: "get",
+                  params: {
+                    uri: uri,
+                    save_file: false,
+                  },
+                })
+                .subscribe((data) => {
+                  this.streamUrlList.push(data?.result?.streaming_url);
+                });
+            }
+          }
+        }
+        console.log("Stream URL = ", this.streamUrl);
+      });
+  }
+
+  onSelectVideo(i: number) {
+    this.streamUrl = "";
+    this.streamUrl = this.streamUrlList[i];
   }
 }
