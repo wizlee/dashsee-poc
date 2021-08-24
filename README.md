@@ -20,15 +20,6 @@ To keep the code as minimal as possible, this project is generated without any t
   - [This is an example in the current Odysee that performs the authentication](https://github.com/lbryio/lbry-desktop/blob/master/ui/page/signInVerify/view.jsx#L78), it uses a common module called [lbryinc](https://github.com/lbryio/lbryinc) to handle the common API calls between `lbry-desktop` and `lbry-android`.
   - A list of all the APIs that are tested to throughout this POC
     ```http
-    #----------------------
-    # References:
-    # https://github.com/accumulator/plugin.video.lbry/blob/main/resources/lib/plugin.py
-    # https://lbry.tech/api/sdk#claim_search
-    # https://github.com/lbryio/lbry-sdk/blob/master/lbry/extras/daemon/daemon.py
-    # https://github.com/lbryio/lbry-sdk/blob/master/lbry/conf.py
-    # This contains a list of what can be called without a wallet ID -> https://github.com/lbryio/odysee-api/blob/master/app/query/const.go
-    #----------------------
-
     # This first example is to resolve claim(s)
     # Example:
     # dev-c++-2018:e
@@ -81,10 +72,10 @@ To keep the code as minimal as possible, this project is generated without any t
     {
         "method": "claim_search",
         "params": {
-          "page": 0,
+          "page": 1,
           "page_size": 20,
           "order_by": "release_time",
-          "stream_types": "video"
+          "stream_types": ["video"]
         }
     }
 
@@ -106,6 +97,7 @@ To keep the code as minimal as possible, this project is generated without any t
     {
         "method": "claim_search",
         "params": {
+          "stream_types" : ["video"],
           "any_tags": "tech"
         }
     }
@@ -160,7 +152,7 @@ To keep the code as minimal as possible, this project is generated without any t
 
     ###
 
-    # Create Wallet
+    # Create Wallet (Not working)
     POST https://api.lbry.tv/api/v1/proxy HTTP/1.1
     content-type: application/json
 
